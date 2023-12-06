@@ -1,18 +1,18 @@
 clc;
 clear;
 N = 4;
-poblacion = 10;
-raccept = 0.7;
-rpa = 0.6;
+poblacion = 100;
+raccept = 0.9;
+rpa = 0.3;
 BW = 0.1;
-NI = 100;
+NI = 4000;
 lims = [
      0 1200;
      0 1200;
     -0.55 0.55;
     -0.55 0.55;
 ];
-HM = []
+HM = [];
 for n=1:poblacion
     temp = [];
     for i = 1:size(lims, 1)
@@ -24,15 +24,15 @@ for n=1:poblacion
     end
     HM = [HM; temp];
 end
-HM
-HM = [HM, FO(HM)]
+HM;
+HM = [HM, FO(HM)];
 new = zeros(size(HM, 1), 1);
-HM  = [HM new];
+HM  = [HM new]
 for it = 1:NI
-    it
-    newX = zeros(1, 4)
+    %it
+    newX = zeros(1, 4);
     for n = 1:N
-        n
+        %n
         r1 = rand; 
         if r1 < raccept 
             index = randi(N,1,1);
@@ -48,22 +48,22 @@ for it = 1:NI
             newX(:, n) = muestra(1, n);
         end
     end
-    newX
-    newX = mcota(newX, lims)
-    newX(1, 5)= FO(newX)
+    newX;
+    newX = mcota(newX, lims);
+    newX(1, 5)= FO(newX);
     %reglas de dev 
     [p, b] = devRules(HM);
     [px, bx] = devRules(newX);
     if isempty(b)
-        px
-        px(1,:)
-        p
+        %px
+        %px(1,:)
+        %p
         if px(1,end) < p(end,end)
-            p(end, :) = px(1,:)
+            p(end, :) = px(1,:);
         end
     end
-    p
-    HM = sortrows(p, 6)
+    %p
+    HM = sortrows(p, 6);
 end
 
 HM
@@ -126,4 +126,5 @@ function cotas = mcota(x, lims)
     end
     cotas = x;
 end
+
 
