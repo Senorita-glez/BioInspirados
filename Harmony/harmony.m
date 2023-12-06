@@ -26,41 +26,47 @@ for n=1:poblacion
 end
 HM
 HM = [HM, FO(HM)]
-
-newX = zeros(1, 4)
-for n = 1:size(HM, 2)-1
-    r1 = rand; 
-    if r1 < raccept 
-        index = randi(N,1,1);
-        r2 = rand;
-        if r2 < rpa
-            rand3 = -1 + 2 * rand;
-            newX(:, n) = HM(index, n) + BW * rand3;
+new = zeros(size(HM, 1), 1);
+HM  = [HM new];
+for it = 1:NI
+    it
+    newX = zeros(1, 4)
+    for n = 1:N
+        n
+        r1 = rand; 
+        if r1 < raccept 
+            index = randi(N,1,1);
+            r2 = rand;
+            if r2 < rpa
+                rand3 = -1 + 2 * rand;
+                newX(:, n) = HM(index, n) + BW * rand3;
+            else
+                newX(:, n) = HM(index, n);
+            end
         else
-            newX(:, n) = HM(index, n);
+            muestra = randGene(lims);
+            newX(:, n) = muestra(1, n);
         end
-    else
-        muestra = randGene(lims);
-        newX(:, n) = muestra(1, n);
     end
-end
-newX
-newX = mcota(newX, lims)
-newX(1, 5)= FO(newX)
-%reglas de dev 
-[p, b] = devRules(HM);
-[px, bx] = devRules(newX);
-if isempty(b)
-    px
-    px(1,:)
+    newX
+    newX = mcota(newX, lims)
+    newX(1, 5)= FO(newX)
+    %reglas de dev 
+    [p, b] = devRules(HM);
+    [px, bx] = devRules(newX);
+    if isempty(b)
+        px
+        px(1,:)
+        p
+        if px(1,end) < p(end,end)
+            p(end, :) = px(1,:)
+        end
+    end
     p
-    p(end,:)
-    if px(1,end) < p(end,end)
-        %se acepta la nueva x
-    end
+    HM = sortrows(p, 6)
 end
 
-
+HM
 
 function fx = FO(HM)
     x1 = HM(:, 1);
@@ -81,9 +87,9 @@ function RndomGen = randGene(lims)
 end
 
 function [devRule, adoc] = devRules(table)
-    adoc = []
-    new = zeros(size(table, 1), 1);
-    table  = [table new];
+    adoc = [];
+    %new = zeros(size(table, 1), 1);
+    %table  = [table new];
     for i = 1:size(table, 1)
         x1 = table(i, 1);
         x2 = table(i, 2);
@@ -120,3 +126,4 @@ function cotas = mcota(x, lims)
     end
     cotas = x;
 end
+
