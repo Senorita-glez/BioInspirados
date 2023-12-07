@@ -72,8 +72,18 @@ for c = 1:corridas
     mejores = [mejores; HM(1, :)];
 end
 mejores = sortrows(mejores, 6)
+disp('Promedio FO')
+mean(mejores(:, 5))
+disp('Desviación estandar FO')
+var(mejores(:, 5))
+%disp('Promedio violación de restricciones')
+%mean(mejores(:, 6))
+%disp('Desviación estandar violación de restricciones')
+%var(mejores(:, 6))
 
-%FUNCIONES
+%//////////////////////////////////////////////////////////////////
+%/////////////////////////////////////////////////////////FUNCIONES
+%//////////////////////////////////////////////////////////////////
 function fx = FO(HM)
     x1 = HM(:, 1);
     x2 = HM(:, 2);
