@@ -1,11 +1,11 @@
 clc;
 clear;
 N = 4;
-poblacion = 100;
-raccept = 0.9;
-rpa = 0.7;
-BW = 0.085;
-NI = 100000;
+poblacion = 10000;
+raccept = 0.95;
+rpa = 0.2;
+BW = 0.0085;
+NI = 20;
 lims = [
      0 1200;
      0 1200;
@@ -13,7 +13,8 @@ lims = [
     -0.55 0.55;
 ];
 mejores = [];
-corridas = 30;
+corridas = 1;
+cero_gordo = 0.00001;
 for c = 1:corridas
     c
     HM = [];
@@ -32,7 +33,7 @@ for c = 1:corridas
     new = zeros(size(HM, 1), 1);
     HM  = [HM new];
     for it = 1:NI
-        %it
+        it
         newX = zeros(1, 4);
         for n = 1:N
             %n
@@ -57,16 +58,23 @@ for c = 1:corridas
         %reglas de dev 
         [p, b] = devRules(HM);
         [px, bx] = devRules(newX);
-        if isempty(b)
-            %px
-            %px(1,:)
-            %p
-            if px(1,end) < p(end,end)
-                p(end, :) = px(1,:);
-            end
+        %px
+        %px(1,:)
+        %p
+        if px(1,end) < p(end,end)
+            p(end, :) = px(1,:);
+        end   
+        HM = sortrows(p, 6);
+
+        if ~isempty(b) && ~isempty(bx)
+            if bx(1,5) > b(end,5)
+                b(1, :) = bx(1,:);
+            end      
+        end
+        if ~isempty(b)
+            HM = [b; HM];
         end
         %p
-        HM = sortrows(p, 6);
     end
     %HM
     mejores = [mejores; HM(1, :)];
@@ -118,6 +126,10 @@ function [devRule, adoc] = devRules(table)
         h3 = 1000*(sin(-(x3) - 0.25)) + 1000*(sin(-(x4) - 0.25)) + 894.8 - (x1);
         h4 = 1000*(sin((x3) - 0.25)) + 1000*(sin((x3) - (x4) - 0.25)) + 894.8 - (x2);
         h5 = 1000*(sin((x4) - 0.25)) + 1000*(sin((x4) - (x3) - 0.25)) + 1294.8;
+        h3(h3 < 0.00001) = 0;
+        h4(h4 < 0.00001) = 0;
+        h5(h5 < 0.00001) = 0;
+        %table(i, 6) = abs(h3) + abs(h4) + abs(h5);
         table(i, 6) = max(0,g1) + max(0,g2) + abs(h3) + abs(h4) + abs(h5);
     end
     devRule = sortrows(table, 6);
