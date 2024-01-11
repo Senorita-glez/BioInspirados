@@ -1,12 +1,12 @@
-filas = 50;
-columnas = 50;
-
-hFig = figure('Name', 'Juego de la Vida', 'NumberTitle', 'off', 'Position', [150, 130, filas * 10, columnas * 10]);
+clc,clear
+dim = 100;
+escala = 8;
+hFig = figure('Name', 'Juego de la Vida', 'NumberTitle', 'off', 'Position', [150, 150, dim*escala, dim*escala]);
 axis tight;
 axis off;
 
 % Crear una matriz inicial aleatoria
-mundo = randi([0, 1], filas, columnas);
+mundo = randi([0, 1], dim, dim);
 
 % Bucle principal del juego
 while isvalid(hFig)
@@ -17,49 +17,33 @@ while isvalid(hFig)
     axis tight;
     drawnow;
 
-    mundo = actualizarJuego(mundo);
+    mundo = actualizarJuego(mundo, dim);
 
     % Pausa para una mejor visualización
     pause(0.1);
 end
 
-function countV = contarVecinos(estadoActual, x, y, filas, columnas)
+function countV = contarVecinos(estadoActual, x, y, dim)
     countV = 0;
     
-    if x-1 > 0 && y-1 > 0
-        countV = countV + estadoActual(x-1, y-1);
-    end
-    if x-1 > 0
-        countV = countV + estadoActual(x-1, y);
-    end
-    if y-1 > 0
-        countV = countV + estadoActual(x, y-1);
-    end
-    if x+1 <= filas && y+1 <= columnas
-        countV = countV + estadoActual(x+1, y+1);
-    end
-    if x+1 <= filas
-        countV = countV + estadoActual(x+1, y);
-    end
-    if y+1 <= columnas
-        countV = countV + estadoActual(x, y+1);
-    end
-    if x+1 <= filas && y-1 > 0
-        countV = countV + estadoActual(x+1, y-1);
-    end
-    if x-1 > 0 && y+1 <= columnas
-        countV = countV + estadoActual(x-1, y+1);
+    % Coordenadas vecinas en una cuadrícula toroidal
+    vecinasX = [x-1, x-1, x-1, x, x, x+1, x+1, x+1];
+    vecinasY = [y-1, y, y+1, y-1, y+1, y-1, y, y+1];
+
+    for i = 1:numel(vecinasX)
+        % Asegurar que las coordenadas estén en el rango correcto
+        vecinaX = mod(vecinasX(i)-1, dim) + 1;
+        vecinaY = mod(vecinasY(i)-1, dim) + 1;
+        
+        countV = countV + estadoActual(vecinaX, vecinaY);
     end
 end
 
-function nuevoEstado = actualizarJuego(estadoActual)
-    [filas, columnas] = size(estadoActual);
-    nuevoEstado = zeros(filas, columnas);
-
-    for x = 1:filas
-        for y = 1:columnas
-
-            vecinosVivos = contarVecinos(estadoActual, x, y, filas, columnas);
+function nuevoEstado = actualizarJuego(estadoActual, dim)
+    nuevoEstado = zeros(dim, dim);
+    for x = 1:dim
+        for y = 1:dim
+            vecinosVivos = contarVecinos(estadoActual, x, y, dim);
             % Aplicar reglas del juego de la vida
             if estadoActual(x, y) == 1 && (vecinosVivos < 2 || vecinosVivos > 3)
                 nuevoEstado(x, y) = 0; % Muere por soledad o superpoblación
